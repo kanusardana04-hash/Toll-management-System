@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toll Entry Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">T</div>
+            <div>
+                <h2>TollEase</h2>
+                <small>Management System</small>
+            </div>
+        </div>
+
+        <p class="menu-label">MAIN MENU</p>
+
+        <nav>
+            <a href="#" class="active">▦ &nbsp; Dashboard</a>
+            <a href="#vehicles">🚘 &nbsp; Vehicles</a>
+            <a href="#toll-entry">＋ &nbsp; Toll Entry</a>
+            <a href="#transactions">▤ &nbsp; Transactions</a>
+            <a href="#audit">◷ &nbsp; Audit Logs</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="status-dot"></div>
+            <span>Database Connected</span>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">Pages / Dashboard</p>
+                <h1>Dashboard Overview</h1>
+            </div>
+            <div class="admin">
+                <div class="avatar">A</div>
+                <div>
+                    <strong>Administrator</strong>
+                    <small>System Manager</small>
+                </div>
+            </div>
+        </header>
+
+        <section class="welcome">
+            <div>
+                <h2>Welcome to TollEase!</h2>
+                <p>Manage toll entries, vehicles and transactions from one place.</p>
+            </div>
+            <div class="welcome-icon">🛣️</div>
+        </section>
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <div class="stat-icon blue">🚘</div>
+                <p>Total Vehicles</p>
+                <h2 id="totalVehicles">0</h2>
+                <small>Registered vehicles</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon purple">▤</div>
+                <p>Total Transactions</p>
+                <h2 id="totalTransactions">0</h2>
+                <small>Recorded entries</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green">₹</div>
+                <p>Total Revenue</p>
+                <h2 id="totalRevenue">₹0</h2>
+                <small>Collected toll amount</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon orange">🏢</div>
+                <p>Toll Booths</p>
+                <h2 id="totalBooths">0</h2>
+                <small>Active booth records</small>
+            </div>
+
+        </section>
+
+        <section class="quick-actions">
+            <h2>Quick Actions</h2>
+
+            <div class="action-grid">
+                <a href="#toll-entry" class="action-card">
+                    <span>＋</span>
+                    <div>
+                        <strong>New Toll Entry</strong>
+                        <small>Record a vehicle entry</small>
+                    </div>
+                </a>
+
+                <a href="#vehicles" class="action-card">
+                    <span>🚘</span>
+                    <div>
+                        <strong>Manage Vehicles</strong>
+                        <small>View vehicle records</small>
+                    </div>
+                </a>
+
+                <a href="#transactions" class="action-card">
+                    <span>📋</span>
+                    <div>
+                        <strong>View Transactions</strong>
+                        <small>Check payment history</small>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            TollEase Management System © 2026
+            <span>Powered by Oracle Database</span>
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

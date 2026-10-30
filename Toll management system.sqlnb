@@ -1,0 +1,510 @@
+cells:
+  - kind: 2
+    value: "\r
+
+      -- ==============================================\r
+
+      -- PROJECT: TOLL ENTRY MANAGEMENT SYSTEM\r
+
+      -- DATABASE: ORACLE 18c\r
+
+      -- LANGUAGE: SQL AND PL/SQL\r
+
+      -- ==============================================\r
+
+      \r
+
+      \r
+
+      -- 1. CREATE VEHICLES TABLE\r
+
+      \r
+
+      CREATE TABLE VEHICLES (\r
+
+      \    VEHICLE_ID NUMBER PRIMARY KEY,\r
+
+      \    VEHICLE_NUMBER VARCHAR2(20) UNIQUE NOT NULL,\r
+
+      \    OWNER_NAME VARCHAR2(50) NOT NULL,\r
+
+      \    VEHICLE_TYPE VARCHAR2(20) NOT NULL\r
+
+      );\r
+
+      \r
+
+      \r
+
+      -- 2. CREATE TOLL RATES TABLE\r
+
+      \r
+
+      CREATE TABLE TOLL_RATES (\r
+
+      \    RATE_ID NUMBER PRIMARY KEY,\r
+
+      \    VEHICLE_TYPE VARCHAR2(20) UNIQUE NOT NULL,\r
+
+      \    TOLL_AMOUNT NUMBER(10,2) NOT NULL\r
+
+      );\r
+
+      \r
+
+      \r
+
+      -- 3. CREATE TOLL BOOTH TABLE\r
+
+      \r
+
+      CREATE TABLE TOLL_BOOTH (\r
+
+      \    BOOTH_ID NUMBER PRIMARY KEY,\r
+
+      \    BOOTH_NAME VARCHAR2(50) NOT NULL,\r
+
+      \    LOCATION VARCHAR2(100) NOT NULL\r
+
+      );\r
+
+      \r
+
+      \r
+
+      -- 4. CREATE TOLL TRANSACTIONS TABLE\r
+
+      \r
+
+      CREATE TABLE TOLL_TRANSACTIONS (\r
+
+      \    TRANSACTION_ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\r
+
+      \    VEHICLE_ID NUMBER NOT NULL,\r
+
+      \    BOOTH_ID NUMBER NOT NULL,\r
+
+      \    TOLL_AMOUNT NUMBER(10,2) NOT NULL,\r
+
+      \    PAYMENT_MODE VARCHAR2(20),\r
+
+      \    TRANSACTION_DATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r
+
+      \r
+
+      \    FOREIGN KEY (VEHICLE_ID)\r
+
+      \    REFERENCES VEHICLES(VEHICLE_ID),\r
+
+      \r
+
+      \    FOREIGN KEY (BOOTH_ID)\r
+
+      \    REFERENCES TOLL_BOOTH(BOOTH_ID)\r
+
+      );\r
+
+      \r
+
+      \r
+
+      -- 5. CREATE AUDIT LOG TABLE\r
+
+      \r
+
+      CREATE TABLE AUDIT_LOG (\r
+
+      \    AUDIT_ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\r
+
+      \    TRANSACTION_ID NUMBER,\r
+
+      \    ACTION_TYPE VARCHAR2(20),\r
+
+      \    ACTION_DATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\r
+
+      \    DESCRIPTION VARCHAR2(200)\r
+
+      );\r
+
+      \r
+
+      \r
+
+      -- 6. INSERT VEHICLE DETAILS\r
+
+      \r
+
+      INSERT INTO VEHICLES VALUES\r
+
+      (1, 'HR24AB1234', 'Rahul', 'CAR');\r
+
+      \r
+
+      INSERT INTO VEHICLES VALUES\r
+
+      (2, 'PB10CD5678', 'Aman', 'BIKE');\r
+
+      \r
+
+      INSERT INTO VEHICLES VALUES\r
+
+      (3, 'HR26EF9012', 'Simran', 'TRUCK');\r
+
+      \r
+
+      INSERT INTO VEHICLES VALUES\r
+
+      (4, 'PB65GH3456', 'Neha', 'BUS');\r
+
+      \r
+
+      \r
+
+      -- 7. INSERT TOLL RATES\r
+
+      \r
+
+      INSERT INTO TOLL_RATES VALUES (1, 'CAR', 100);\r
+
+      INSERT INTO TOLL_RATES VALUES (2, 'BIKE', 40);\r
+
+      INSERT INTO TOLL_RATES VALUES (3, 'TRUCK', 250);\r
+
+      INSERT INTO TOLL_RATES VALUES (4, 'BUS', 180);\r
+
+      \r
+
+      \r
+
+      -- 8. INSERT TOLL BOOTH DETAILS\r
+
+      \r
+
+      INSERT INTO TOLL_BOOTH VALUES\r
+
+      (1, 'Main Toll Plaza', 'Kharar');\r
+
+      \r
+
+      INSERT INTO TOLL_BOOTH VALUES\r
+
+      (2, 'Highway Toll Plaza', 'Mohali');\r
+
+      \r
+
+      COMMIT;\r
+
+      \r
+
+      \r
+
+      -- 9. CREATE TOLL ENTRY PROCEDURE\r
+
+      \r
+
+      CREATE OR REPLACE PROCEDURE TOLL_ENTRY (\r
+
+      \    P_VEHICLE_ID IN NUMBER,\r
+
+      \    P_BOOTH_ID IN NUMBER,\r
+
+      \    P_PAYMENT_MODE IN VARCHAR2\r
+
+      )\r
+
+      AS\r
+
+      \    V_VEHICLE_TYPE VARCHAR2(20);\r
+
+      \    V_TOLL_AMOUNT NUMBER(10,2);\r
+
+      \    V_TRANSACTION_ID NUMBER;\r
+
+      BEGIN\r
+
+      \r
+
+      \    SELECT VEHICLE_TYPE\r
+
+      \    INTO V_VEHICLE_TYPE\r
+
+      \    FROM VEHICLES\r
+
+      \    WHERE VEHICLE_ID = P_VEHICLE_ID;\r
+
+      \r
+
+      \    SELECT TOLL_AMOUNT\r
+
+      \    INTO V_TOLL_AMOUNT\r
+
+      \    FROM TOLL_RATES\r
+
+      \    WHERE VEHICLE_TYPE = V_VEHICLE_TYPE;\r
+
+      \r
+
+      \    INSERT INTO TOLL_TRANSACTIONS (\r
+
+      \        VEHICLE_ID,\r
+
+      \        BOOTH_ID,\r
+
+      \        TOLL_AMOUNT,\r
+
+      \        PAYMENT_MODE\r
+
+      \    )\r
+
+      \    VALUES (\r
+
+      \        P_VEHICLE_ID,\r
+
+      \        P_BOOTH_ID,\r
+
+      \        V_TOLL_AMOUNT,\r
+
+      \        P_PAYMENT_MODE\r
+
+      \    )\r
+
+      \    RETURNING TRANSACTION_ID INTO V_TRANSACTION_ID;\r
+
+      \r
+
+      \    DBMS_OUTPUT.PUT_LINE('TOLL TRANSACTION SUCCESSFUL');\r
+
+      \    DBMS_OUTPUT.PUT_LINE('Vehicle Type: ' || V_VEHICLE_TYPE);\r
+
+      \    DBMS_OUTPUT.PUT_LINE('Toll Amount: Rs. ' || V_TOLL_AMOUNT);\r
+
+      \    DBMS_OUTPUT.PUT_LINE('Transaction ID: ' || V_TRANSACTION_ID);\r
+
+      \r
+
+      EXCEPTION\r
+
+      \    WHEN NO_DATA_FOUND THEN\r
+
+      \        DBMS_OUTPUT.PUT_LINE(\r
+
+      \            'Error: Vehicle or toll rate not found.'\r
+
+      \        );\r
+
+      \r
+
+      \    WHEN OTHERS THEN\r
+
+      \        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);\r
+
+      \r
+
+      END;\r
+
+      /\r
+
+      \r
+
+      \r
+
+      -- 10. CREATE AUDIT TRIGGER\r
+
+      \r
+
+      CREATE OR REPLACE TRIGGER TOLL_AUDIT_TRIGGER\r
+
+      AFTER INSERT OR UPDATE OR DELETE\r
+
+      ON TOLL_TRANSACTIONS\r
+
+      FOR EACH ROW\r
+
+      DECLARE\r
+
+      \    PRAGMA AUTONOMOUS_TRANSACTION;\r
+
+      BEGIN\r
+
+      \r
+
+      \    IF INSERTING THEN\r
+
+      \r
+
+      \        INSERT INTO AUDIT_LOG (\r
+
+      \            TRANSACTION_ID,\r
+
+      \            ACTION_TYPE,\r
+
+      \            DESCRIPTION\r
+
+      \        )\r
+
+      \        VALUES (\r
+
+      \            :NEW.TRANSACTION_ID,\r
+
+      \            'INSERT',\r
+
+      \            'New toll transaction created'\r
+
+      \        );\r
+
+      \r
+
+      \    ELSIF UPDATING THEN\r
+
+      \r
+
+      \        INSERT INTO AUDIT_LOG (\r
+
+      \            TRANSACTION_ID,\r
+
+      \            ACTION_TYPE,\r
+
+      \            DESCRIPTION\r
+
+      \        )\r
+
+      \        VALUES (\r
+
+      \            :NEW.TRANSACTION_ID,\r
+
+      \            'UPDATE',\r
+
+      \            'Toll transaction updated'\r
+
+      \        );\r
+
+      \r
+
+      \    ELSIF DELETING THEN\r
+
+      \r
+
+      \        INSERT INTO AUDIT_LOG (\r
+
+      \            TRANSACTION_ID,\r
+
+      \            ACTION_TYPE,\r
+
+      \            DESCRIPTION\r
+
+      \        )\r
+
+      \        VALUES (\r
+
+      \            :OLD.TRANSACTION_ID,\r
+
+      \            'DELETE',\r
+
+      \            'Toll transaction deleted'\r
+
+      \        );\r
+
+      \r
+
+      \    END IF;\r
+
+      \r
+
+      \    COMMIT;\r
+
+      END;\r
+
+      /\r
+
+      \r
+
+      \r
+
+      -- 11. TEST TOLL ENTRY PROCEDURE\r
+
+      \r
+
+      BEGIN\r
+
+      \    TOLL_ENTRY(2, 1, 'CASH');\r
+
+      \    COMMIT;\r
+
+      END;\r
+
+      /\r
+
+      \r
+
+      \r
+
+      -- 12. TEST UPDATE OPERATION\r
+
+      \r
+
+      UPDATE TOLL_TRANSACTIONS\r
+
+      SET PAYMENT_MODE = 'CARD'\r
+
+      WHERE TRANSACTION_ID = (\r
+
+      \    SELECT MAX(TRANSACTION_ID)\r
+
+      \    FROM TOLL_TRANSACTIONS\r
+
+      );\r
+
+      \r
+
+      COMMIT;\r
+
+      \r
+
+      \r
+
+      -- 13. DISPLAY VEHICLE RECORDS\r
+
+      \r
+
+      SELECT * FROM VEHICLES;\r
+
+      \r
+
+      \r
+
+      -- 14. DISPLAY TOLL RATES\r
+
+      \r
+
+      SELECT * FROM TOLL_RATES;\r
+
+      \r
+
+      \r
+
+      -- 15. DISPLAY TOLL BOOTHS\r
+
+      \r
+
+      SELECT * FROM TOLL_BOOTH;\r
+
+      \r
+
+      \r
+
+      -- 16. DISPLAY TOLL TRANSACTIONS\r
+
+      \r
+
+      SELECT * FROM TOLL_TRANSACTIONS;\r
+
+      \r
+
+      \r
+
+      -- 17. DISPLAY AUDIT LOG\r
+
+      \r
+
+      SELECT * FROM AUDIT_LOG;\r\n"
+    languageId: oracle-sql
